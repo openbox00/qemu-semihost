@@ -8,39 +8,30 @@
 int32_t *read_counter = (int32_t *) READ_COUNTER_ADDR;
 int main(void)
 {
-	printf("This is a test program for QEMU counter device\n");
-	printf("See http://github.com/krasin/qemu-counter for more details\n\n");
-	/*
-	printf("Let's check if the Read Counter device presented\n");
-	for (int i = 0; i < 10; i++) {
-		printf("The device has been accessed for %"PRId32" times!\n", *read_counter);
-	}
-	int32_t now = *read_counter;
-	if (now == 0) {
-		printf("ERROR - No Read Counter detected\n");
-	}
-	else if (now == 11) {
-		printf("OK - Read Counter works as intended\n");
-	}
-	else {
-		printf("ERROR - Something is wrong with Read Counter\n");
-	}
-	*/
-	//read funcion (read host file)
-	{
-	FILE *fd;
-	unsigned char path[size];
+	FILE *fileread,*filewrite;
+	unsigned char pathread[size];
 	unsigned char buffer[size];	
+	unsigned char writebuffer[size];	
+	
+	//open and read(open host file, and read file then print out)	
+	printf("You can modify the file in Host\n");
 	printf("Please enter the file path in Host :\n");
-	scanf("%s", path);
-	fd = fopen(path, "r");
-	fread(buffer, sizeof(buffer),1,fd);
-	printf("%s content is %s\n",path,buffer);
-
-	
+	scanf("%s", pathread);
+	fileread = fopen(pathread, "r");
+	if (fileread == NULL){
+	printf("Please enter the right path!!\n");
+	}else{
+	fread(buffer, sizeof(buffer),1,fileread);
+	printf("%s content is %s\n",pathread,buffer);
 	}
-	
-	
+	fclose(fileread);
+
+	//write (write back to host file)	
+	filewrite = fopen(pathread, "a");
+	printf("\nPlease enter the content you want to write in file :\n");	
+	scanf("%s", writebuffer);	
+	fprintf(filewrite, "%s", &writebuffer);
+   	fclose(filewrite);	
 	
 	return 0;
 }
