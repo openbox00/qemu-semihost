@@ -1,6 +1,6 @@
 all:
-	@echo "Please execute ./test.sh"
-
+	#@echo "Please execute ./test.sh"
+	./test.sh
 clean:
 	rm -f hello.elf
 
