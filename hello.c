@@ -1,9 +1,14 @@
 #include <stdio.h>
-#include <inttypes.h>
+#include <stdlib.h>
+//#include <inttypes.h>
+//#include <stddef.h>
+
 
 #define S_IFIFO 1
 #define S_IMSGQ 2
 #define O_CREAT 4
+
+#define HELLO_WORLD "Hello World\n"
 
 typedef struct param{
     int   pdInt;
@@ -62,7 +67,6 @@ static int open(char *pathname, int flags){
 
     parameter[0].pdChrPtr = pathname;
     parameter[1].pdInt    = 2;
-    parameter[2].pdPtr    = strlen(pathname);
 
     return simicall(SYS_OPEN, parameter);
 }
@@ -101,47 +105,61 @@ static int write(int fd, void *ptr, int numbytes){
     return simicall(SYS_WRITE, parameter);
 }
 
+/*
+void print(char *str){
+	write(open("x.txt", 2), str,strlen(str)+1);
+}
+
+void scanf(char *x)
+{
+	read(open("x.txt", 0), x, 1);
+}
+*/
 int main(void)
 {
 	int fd;
-	char *ch = "Hello";
-
+	char ch;
 	/*ref rtenv*/
+	fd = open("x.txt",2);
 
 	/*flag=2, means can read and write*/
-	fd = open("x.txt", 2);
+	write(fd, HELLO_WORLD, sizeof(HELLO_WORLD));
+	
 
-	while (*ch){
-		write(fd,ch,1);
-		ch++;
-	}
+//	fd = open("x.txt", 2);
 
-	close(fd);
 
-//	unsigned char path[size];
-//	unsigned char buffer[size];	
-//	unsigned char writebuffer[size];	
+//	read(fdin, &ch, 1);
 
-	//open and read(open host file, and read file then print out)	
-//	printf("You can modify the file in Host\n");
-//	printf("Please enter the file path in Host :\n");
-//	scanf("%s", path);
-	/*let scanf can work */
-//	fflush(stdin);
 
-//	if (fd == NULL){
-//	printf("Please enter the right path!!\n");
-//	}else{
-//	read(buffer, sizeof(buffer),1,fd);
-//	printf("%s content is %s\n",path,buffer);
-//	//write (write back to host file)	
-//	printf("\nPlease enter the content you want to write in file :\n");	
-//	scanf("%[^\n]",writebuffer);
-//	/*let scanf can work */
-//	fflush(stdin);
-//	write(fd, "%s", &writebuffer);
-//	}
 //	close(fd);
 
+
+#if 0
+	unsigned char path[size];
+	unsigned char buffer[size];	
+	unsigned char writebuffer[size];	
+
+	//open and read(open host file, and read file then print out)	
+	printf("You can modify the file in Host\n");
+	printf("Please enter the file path in Host :\n");
+	scanf("%s", path);
+	/*let scanf can work */
+	fflush(stdin);
+
+	if (fd == NULL){
+	printf("Please enter the right path!!\n");
+	}else{
+	read(buffer, sizeof(buffer),1,fd);
+	printf("%s content is %s\n",path,buffer);
+	//write (write back to host file)	
+	printf("\nPlease enter the content you want to write in file :\n");	
+	scanf("%[^\n]",writebuffer);
+	/*let scanf can work */
+	fflush(stdin);
+	write(fd, "%s", &writebuffer);
+	}
+	close(fd);
+#endif
 	return 0;
 }
