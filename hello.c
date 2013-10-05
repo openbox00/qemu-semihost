@@ -32,13 +32,13 @@ size_t strlen(const char *s) __attribute__ ((naked));
 size_t strlen(const char *s)
 {
 	__asm__ __volatile__(
-		"	sub  r3, r0, #1			\n"
-        "strlen_loop:               \n"
+		"sub  r3, r0, #1			\n"
+       		"strlen_loop:               		\n"
 		"	ldrb r2, [r3, #1]!		\n"
-		"	cmp  r2, #0				\n"
-        "   bne  strlen_loop        \n"
+		"	cmp  r2, #0			\n"
+	        " 	bne  strlen_loop        	\n"
 		"	sub  r0, r3, r0			\n"
-		"	bx   lr					\n"
+		"	bx   lr				\n"
 		:::
 	);
 }
@@ -67,6 +67,11 @@ static int open(char *pathname, int flags){
     return simicall(SYS_OPEN, parameter);
 }
 
+/*
+Value of mode
+mode	0	1	2	3	4	5	6	7	8	9	10	11
+	r	rb	r+	r+b	w	wb	w+	w+b	a	ab	a+	a+b
+*/
 
 /*read*/
 static int read(int fd, void *ptr, int numbytes){
