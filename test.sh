@@ -4,7 +4,8 @@ set -ue
 
 . ./qemu.sh
 
-arm-none-eabi-gcc -o hello.elf hello.c -g -mcpu=cortex-m3 -mthumb -T generic-m-hosted.ld -std=c99
+#arm-none-eabi-gcc -o hello.elf hello.c -g -mcpu=cortex-m3 -mthumb -T generic-m-hosted.ld -std=c99
+arm-none-eabi-gcc -o hello.elf hello.c -g -mcpu=cortex-m3 -mthumb -std=c99
 
 echo
 echo "============================================="
