@@ -1,14 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-
-#define HELLO_WORLD "Hello World\n"
-
-typedef struct param{
-    int   pdInt;
-    void *pdPtr;
-    char *pdChrPtr;
-}param_t;
+#include <inttypes.h>
 
 /* can ref arm website: 
  * http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0471c/CHDGGIID.html
@@ -39,6 +30,7 @@ size_t strlen(const char *s)
 	);
 }
 
+
 /*ref zzz00072 & aacczury*/
 int simicall(enum SYS_CALL action, void *arg) __attribute__ ((naked));
 int simicall(enum SYS_CALL action, void *arg)
@@ -51,14 +43,31 @@ int simicall(enum SYS_CALL action, void *arg)
     );
 }
 
+typedef struct paramopen{
+    char *parampath;
+    int   paramflags;
+}paramopen_t;
+
+typedef struct paramread{
+    int   fd;
+    void *buf;
+    size_t *count;
+}paramread_t;
+
+typedef struct paramwrite{
+    int   fd;
+    void *buf;
+    size_t count;
+}paramwrite_t;
+
 /*open*/
 static int open(char *pathname, int flags){
-    param_t *parameter;
+    paramopen_t *parameteropen;
 
-    parameter->pdChrPtr = pathname;
-    parameter->pdInt    = 2;
+    parameteropen->parampath = pathname;
+    parameteropen->paramflags    = 2;
 
-    return simicall(SYS_OPEN, parameter);
+    return simicall(SYS_OPEN, parameteropen);
 }
 
 /*
@@ -67,14 +76,14 @@ mode	0	1	2	3	4	5	6	7	8	9	10	11
 	r	rb	r+	r+b	w	wb	w+	w+b	a	ab	a+	a+b
 */
 /*read*/
-static int read(int fd, void *ptr, int numbytes){
-    param_t parameter[3] = {0};
+static int read(int fd, void *buf, size_t count){
+    paramread_t *parameterread;
 
-    parameter[0].pdInt = fd;
-    parameter[1].pdPtr = ptr;
-    parameter[2].pdInt = numbytes;
+    parameterread->fd = fd;
+    parameterread->buf = buf;
+    parameterread->count = count;
 
-    return simicall(SYS_READ, parameter);
+    return simicall(SYS_READ, parameterread);
 }
 
 /*close*/
@@ -83,26 +92,26 @@ static int close(int fd){
 }
 
 /*write*/
-static int write(int fd, void *ptr, int numbytes){
-    param_t parameter[3] = {0};
+static int write(int fd, void *buf, size_t count){
+    paramwrite_t *parameterwrite;
 
-    parameter[0].pdInt = fd;
-    parameter[1].pdPtr = ptr;
-    parameter[2].pdInt = numbytes;
+    parameterwrite->fd = fd;
+    parameterwrite->buf = buf;
+    parameterwrite->count = count;
 
-    return simicall(SYS_WRITE, parameter);
+    return simicall(SYS_WRITE, parameterwrite);
 }
 
 int main(void)
 {
+	/*ref rtenv*/	
 	int fd;
-	char ch;
-	/*ref rtenv*/
-	fd = open("x.txt",2);
-	read(fd, &ch, 1);
+	char c;
 
-	/*flag=2, means can read and write*/
-	write(fd, HELLO_WORLD, sizeof(HELLO_WORLD));
+	fd = open("out", 0);
+
+	read(fd, &c, 1);
+
+	return 0;
 }
-
 
